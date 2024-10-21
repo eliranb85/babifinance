@@ -1,0 +1,92 @@
+.Home{
+    background-image:url('../../assist/img/homepageimg.jpg') ;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Alef', sans-serif;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 600px;
+    height: 400px; /* Set a width for the form */
+    padding: 20px;
+    border: 2px solid #000000;
+    color:white;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.151); /* Light background color */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    flex-basis: 30%;
+    margin-right: 10px;
+    font-size: 24px;
+}
+
+.input-group input {
+    flex-basis: 70%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #cccccc4b;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    cursor: pointer;
+    flex: 1;
+    margin-right: 10px;
+    font-weight: 600;
+    font-size: 20px;
+}
+#createuserbtn{
+    background-color: transparent;
+    color:#ffffff;
+    border: 1px solid #ccc;
+}
+button:last-child {
+    margin-right: 10px;
+}
+#createuserbtn:hover {
+    background-color: #dd54a96c;
+}
+button:hover {
+    background-color: #51a4fd6c;
+}
+button img {
+    width: 40px; /* Adjust the icon size as needed */
+    height: 40px;
+}
+.logohome img{
+    width: 100vh;
+    height: 99vh;
+    /* background-color: #e4e2dd; */
+    /* border:2px solid black; */
+    /* border-radius: 20px; */
+    margin-left: 20px;
+}
