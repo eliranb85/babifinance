@@ -10,6 +10,7 @@ import {UserProvider} from './UserContext.js';
 import BlogPostList from './components/BlogPostList/BlogPostList.jsx';
 import EditBlogPost from './components/EditBlogPost/EditBlogPost.jsx'
 import HomeExpenses from './components/HomeExpenses/HomeExpenses.jsx'
+import Welcome from './components/Welcome/Welcome.jsx';
 
 function App() {
   const goldPrice14k = { ils: 160, usd: 45 }; // Example prices
@@ -39,6 +40,7 @@ function App() {
         <Route path='/BlogPostList' element={<BlogPostList/>} />
         <Route path='/edit-post/:id' element={<EditBlogPost />} />
         <Route path="/HomeExpenses" element={<HomeExpenses />} />
+        <Route path="/Welcome" element={<Welcome />} />
         <Route path="/" element={<Home />} />
 
       </Routes>

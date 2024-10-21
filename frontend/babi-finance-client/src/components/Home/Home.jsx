@@ -1,67 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../UserContext'; // Adjust the path based on your folder structure
+import './Home.css';
+import signInIcon from '../../assist/icons/sun_503351.svg'; // Adjust the path based on your folder structure
+import userPlusIcon from '../../assist/icons/family_1416832.svg'; 
+import websiteLogo from '../../assist/icons/BabiFinance/2.svg';
 
-const Home = () => {
+function Home() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false); // Optional: Add loading state
+    const { setUser } = useContext(UserContext);
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Set loading state to true
-        setError('');  // Clear any previous error messages
-
         try {
-            const response = await axios.post('http://localhost:5000/api/users/login', { username, password });
-            
-            if (response.data && response.data.token) {
-                const token = response.data.token;
-                localStorage.setItem('token', token); // Store the token
-                alert('Login successful');
-                // Optionally redirect or do something after login
+            const response = await axios.post('http://localhost:5000/api/users/login', {
+                username,
+                password
+            });
+    
+            if (response.data.message === 'Login successful') {
+                setUser({ firstname: username }); // Set the user context
+                navigate('/Welcome'); // Navigate to the home page or another component
             } else {
-                setError('Login failed: No token received.');
+                alert('Login failed');
             }
         } catch (error) {
-            if (error.response) {
-                // Backend error (4xx, 5xx response codes)
-                setError(error.response.data.message || 'Login failed: Server error.');
-            } else {
-                // Network error or other issues
-                setError('Login failed: Please check your connection.');
-            }
-            console.error('Login error:', error);
-        } finally {
-            setLoading(false);  // Set loading state to false after request
+            console.error('There was an error logging in!', error);
+            alert('Login failed: ' + error.response?.data?.error || 'Unknown error');
         }
+    };
+    
+
+    const handleRegisterClick = () => {
+        navigate('/CreateUser');
     };
 
     return (
-        <div>
-            <h2>Login</h2>
+        <div className="Home">
             <form onSubmit={handleLogin}>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit" disabled={loading}> {/* Disable button while loading */}
-                    {loading ? 'Logging in...' : 'Login'}
-                </button>
+                <div className="input-group">
+                    <label>שם משתמש:</label>
+                    <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="input-group">
+                    <label>ססמא:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="button-container">
+                    <button type="submit">
+                        כניסה
+                        <img src={signInIcon} alt="Sign In" style={{ marginRight: '8px' }} />
+                    </button>
+                    <button
+                        type="button"
+                        id="createuserbtn"
+                        onClick={handleRegisterClick}
+                    >
+                        משתמש חדש
+                        <img src={userPlusIcon} alt="Create User" style={{ marginRight: '15px' }} />
+                    </button>
+                </div>
             </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <div className="logohome">
+                <img src={websiteLogo} alt="Website Logo" style={{ marginRight: '15px' }} />
+            </div>
         </div>
     );
-};
+}
 
 export default Home;

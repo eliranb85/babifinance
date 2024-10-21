@@ -1,0 +1,35 @@
+/* src/components/Welcome.css */
+.welcome-container {
+    text-align: center;
+    padding: 50px;
+  }
+  
+  .welcome-container h1 {
+    color: #333;
+  }
+  
+  .welcome-container p {
+    font-size: 1.2em;
+    color: #555;
+  }
+  
+  .welcome-container nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 30px;
+  }
+  
+  .welcome-container nav li {
+    margin: 15px 0;
+  }
+  
+  .welcome-container nav a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.1em;
+  }
+  
+  .welcome-container nav a:hover {
+    text-decoration: underline;
+  }
+  

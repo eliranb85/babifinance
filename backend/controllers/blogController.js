@@ -76,10 +76,14 @@ const getTags = async (req, res) => {
 // Fetch Blog Posts from WordPress
 const getBlogPosts = async (req, res) => {
     const { page = 1, per_page = 10, search = "" } = req.query;
+
     try {
-        const response = await axios.get(`${wpBaseUrl}/wp/v2/posts`, {
+        let token = wpAuthToken; // Start with current token
+
+        // Make the API call with the current token
+        let response = await axios.get(`${wpBaseUrl}/wp/v2/posts`, {
             headers: {
-                Authorization: `Bearer ${wpAuthToken}`,
+                Authorization: `Bearer ${token}`,
             },
             params: {
                 page,
@@ -89,64 +93,63 @@ const getBlogPosts = async (req, res) => {
         });
 
         const posts = response.data;
-
-        // Extract total count and total pages from headers
         const totalPosts = parseInt(response.headers['x-wp-total'], 10);
         const totalPages = parseInt(response.headers['x-wp-totalpages'], 10);
 
-        // Enrich each post with featured_media_url and tagNames
-        const enrichedPosts = await Promise.all(
-            posts.map(async (post) => {
-                // Fetch featured media URL
-                let featured_media_url = "";
-                if (post.featured_media) {
-                    try {
-                        const mediaResponse = await axios.get(`${wpBaseUrl}/wp/v2/media/${post.featured_media}`, {
-                            headers: {
-                                Authorization: `Bearer ${wpAuthToken}`,
-                            },
-                        });
-                        featured_media_url = mediaResponse.data.source_url;
-                    } catch (err) {
-                        console.error(`Error fetching media for post ${post.id}:`, err);
-                    }
-                }
-
-                // Fetch tag names
-                let tagNames = [];
-                if (post.tags && post.tags.length > 0) {
-                    try {
-                        const tagsResponse = await axios.get(`${wpBaseUrl}/wp/v2/tags`, {
-                            headers: {
-                                Authorization: `Bearer ${wpAuthToken}`,
-                            },
-                            params: {
-                                include: post.tags.join(","),
-                                per_page: post.tags.length,
-                            },
-                        });
-                        tagNames = tagsResponse.data.map((tag) => tag.name);
-                    } catch (err) {
-                        console.error(`Error fetching tags for post ${post.id}:`, err);
-                    }
-                }
-
-                return {
-                    id: post.id,
-                    title: post.title,
-                    status: post.status,
-                    date: post.date,
-                    featured_media_url,
-                    tagNames,
-                    tags: post.tags, // Include tag IDs for editing purposes
-                };
-            })
-        );
+        // Enrich posts with media and tags (as in your original code)...
 
         res.json({ posts: enrichedPosts, totalPosts, totalPages });
     } catch (error) {
-        console.error('Error fetching blog posts:', error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Failed to fetch blog posts' });
+        if (error.response && error.response.data.code === 'jwt_auth_invalid_token') {
+            console.log('Token expired, refreshing...');
+
+            try {
+                // Refresh the token
+                const newToken = await refreshToken();
+                
+                // Retry the request with the new token
+                const response = await axios.get(`${wpBaseUrl}/wp/v2/posts`, {
+                    headers: {
+                        Authorization: `Bearer ${newToken}`,
+                    },
+                    params: {
+                        page,
+                        per_page,
+                        search,
+                    },
+                });
+
+                const posts = response.data;
+                const totalPosts = parseInt(response.headers['x-wp-total'], 10);
+                const totalPages = parseInt(response.headers['x-wp-totalpages'], 10);
+
+                res.json({ posts: enrichedPosts, totalPosts, totalPages });
+            } catch (refreshError) {
+                console.error('Error refreshing token:', refreshError.message);
+                return res.status(500).json({ error: 'Token expired and failed to refresh' });
+            }
+        } else {
+            console.error('Error fetching blog posts:', error.response ? error.response.data : error.message);
+            res.status(500).json({ error: 'Failed to fetch blog posts' });
+        }
+    }
+};
+
+const refreshToken = async () => {
+    try {
+        const response = await axios.post(`${wpBaseUrl}/jwt-auth/v1/token`, {
+            username: process.env.WP_USERNAME, // Ensure WP_USERNAME is set in your environment variables
+            password: process.env.WP_PASSWORD, // Ensure WP_PASSWORD is set in your environment variables
+        });
+console.log('user name: ',response)
+        // Save the new token in your environment or a secure place
+        process.env.WP_AUTH_TOKEN = response.data.token;
+
+        // Return the new token
+        return response.data.token;
+    } catch (error) {
+        console.error('Error refreshing token:', error.response ? error.response.data : error.message);
+        throw new Error('Failed to refresh token');
     }
 };
 

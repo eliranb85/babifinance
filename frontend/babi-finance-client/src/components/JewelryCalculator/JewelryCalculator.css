@@ -1,20 +1,23 @@
 /* JewelryCalculator.css */
 
 .container {
-    background-color: black;
-    height: 140vh;
+    background-image: url('../../assist/img/3d-rendering-abstract-black-paper-cut-art-background-design-website-template-presentation-template-black-background.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: repeat;
+    height: 100vh;
+    padding-top: 150px;
+    z-index: 1;
 }
 
 .jewelry-calculator-container {
-    background-image: url('../../assist/img/3d-rendering-abstract-black-paper-cut-art-background-design-website-template-presentation-template-black-background.jpg');
-    background-repeat: repeat-y;
-    background-position: center;
-    background-size: cover;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 20px;
     padding: 20px;
+    margin-top: 140px;
+    z-index: 1;
 
 }
 
